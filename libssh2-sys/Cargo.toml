@@ -1,13 +1,17 @@
 [package]
-name = "libssh2-sys"
-version = "0.3.3"
+name = "sshw-libssh2-sys"
+version = "0.1.0"
+edition = "2015"
+rust-version = "1.89"
 authors = ["Alex Crichton <alex@alexcrichton.com>", "Wez Furlong <wez@wezfurlong.org>", "Matteo Bigoi <bigo@crisidev.org>"]
 links = "ssh2"
 build = "build.rs"
-license = "MIT OR Apache-2.0"
-repository = "https://github.com/alexcrichton/ssh2-rs"
-documentation = "https://docs.rs/libssh2-sys"
-description = "Native bindings to the libssh2 library"
+license = "(MIT OR Apache-2.0) AND BSD-3-Clause"
+repository = "https://github.com/Lv2dev/sshw-native"
+documentation = "https://docs.rs/sshw-libssh2-sys"
+description = "SSHW-maintained native SSH bindings with a pinned, verified libssh2 source bundle"
+readme = "README.md"
+include = ["/lib.rs", "/build.rs", "/README.md", "/LICENSE-*", "/NATIVE-SOURCE.json", "/libssh2/src/**", "/libssh2/include/**", "/libssh2/COPYING", "/libssh2/libssh2.pc.in"]
 
 [lib]
 name = "libssh2_sys"
@@ -29,8 +33,4 @@ openssl-sys = "0.9.35"
 openssl-sys = { version="0.9.35", optional = true }
 
 [build-dependencies]
-pkg-config = "0.3.11"
 cc = "1.0.25"
-
-[target.'cfg(target_env = "msvc")'.build-dependencies]
-vcpkg = "0.2"

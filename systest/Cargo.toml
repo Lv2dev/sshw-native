@@ -1,11 +1,12 @@
 [package]
 name = "systest"
+publish = false
 version = "0.1.0"
 authors = ["Alex Crichton <alex@alexcrichton.com>"]
 build = "build.rs"
 
 [dependencies]
-libssh2-sys = { path = "../libssh2-sys" }
+libssh2-sys = { package = "sshw-libssh2-sys", path = "../libssh2-sys" }
 libc = "0.2"
 
 [build-dependencies]
