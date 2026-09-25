@@ -1,4 +1,4 @@
-# SSHW native SSH packages
+# sshw-libssh2-sys
 
 이 저장소는 SSHW 배포를 위한 `sshw-ssh2`와 `sshw-libssh2-sys`를 관리합니다. Rust API crate 이름은 `ssh2`/`libssh2_sys`이며 원본 프로젝트가 게시한 패키지와 구분되는 별도 배포물입니다.
 

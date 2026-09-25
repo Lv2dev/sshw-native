@@ -1,17 +1,22 @@
 [package]
-name = "ssh2"
-version = "0.9.6"
+name = "sshw-ssh2"
+version = "0.1.0"
+edition = "2015"
+rust-version = "1.89"
+include = ["/src/**", "/README.md", "/LICENSE-*"]
 authors = ["Alex Crichton <alex@alexcrichton.com>", "Wez Furlong <wez@wezfurlong.org>", "Matteo Bigoi <bigo@crisidev.org>"]
 license = "MIT OR Apache-2.0"
 keywords = ["ssh"]
 readme = "README.md"
-repository = "https://github.com/rust-lang/ssh2-rs"
-homepage = "https://github.com/rust-lang/ssh2-rs"
-documentation = "https://docs.rs/ssh2"
+repository = "https://github.com/Lv2dev/sshw-native"
+homepage = "https://github.com/Lv2dev/sshw-native"
+documentation = "https://docs.rs/sshw-ssh2"
 description = """
-Bindings to libssh2 for interacting with SSH servers and executing remote
-commands, forwarding local ports, etc.
+SSHW-maintained Rust SSH bindings using a pinned, verified libssh2 source bundle.
 """
+
+[lib]
+name = "ssh2"
 
 [features]
 vendored-openssl = ["libssh2-sys/vendored-openssl"]
@@ -20,11 +25,12 @@ openssl-on-win32 = ["libssh2-sys/openssl-on-win32"]
 [dependencies]
 bitflags = "2"
 libc = "0.2"
-libssh2-sys = { path = "libssh2-sys", version = "0.3.2" }
+libssh2-sys = { package = "sshw-libssh2-sys", path = "libssh2-sys", version = "0.1.0" }
 parking_lot = "0.12"
 
 [dev-dependencies]
 tempfile = "3"
 
 [workspace]
+resolver = "2"
 members = ['systest']

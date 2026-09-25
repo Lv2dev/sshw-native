@@ -1,43 +1,19 @@
 extern crate cc;
-extern crate pkg_config;
-
-#[cfg(target_env = "msvc")]
-extern crate vcpkg;
 
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
 fn main() {
-    let zlib_ng_compat = env::var("CARGO_FEATURE_ZLIB_NG_COMPAT").is_ok();
-
-    if !zlib_ng_compat && try_vcpkg() {
-        return;
-    }
-
-    // The system copy of libssh2 is not used by default because it
-    // can lead to having two copies of libssl loaded at once.
-    // See https://github.com/alexcrichton/ssh2-rs/pull/88
     println!("cargo:rerun-if-env-changed=LIBSSH2_SYS_USE_PKG_CONFIG");
-    if env::var("LIBSSH2_SYS_USE_PKG_CONFIG").is_ok() {
-        if zlib_ng_compat {
-            panic!("LIBSSH2_SYS_USE_PKG_CONFIG set, but cannot use zlib-ng-compat with system libssh2");
-        }
-        if let Ok(lib) = pkg_config::find_library("libssh2") {
-            for path in &lib.include_paths {
-                println!("cargo:include={}", path.display());
-            }
-            return;
-        }
-    }
-
-    if !Path::new("libssh2/.git").exists() {
-        let _ = Command::new("git")
-            .args(&["submodule", "update", "--init"])
-            .status();
-    }
-
+    assert!(env::var_os("LIBSSH2_SYS_USE_PKG_CONFIG").is_none(),
+        "sshw-libssh2-sys builds its verified source bundle; system libssh2 overrides are unsupported");
+    assert!(
+        Path::new("libssh2/src/transport.c").is_file(),
+        "bundled libssh2 source is missing"
+    );
+    println!("cargo:upstream_revision=4aded1bf2de0a7ceb02cd50b0b1f7a826984783a");
+    println!("cargo:rerun-if-changed=NATIVE-SOURCE.json");
     let target = env::var("TARGET").unwrap();
     let profile = env::var("PROFILE").unwrap();
     let dst = PathBuf::from(env::var_os("OUT_DIR").unwrap());
@@ -202,47 +178,4 @@ fn main() {
         println!("cargo:rustc-link-lib=user32");
         println!("cargo:rustc-link-lib=ntdll");
     }
-}
-
-#[cfg(not(target_env = "msvc"))]
-fn try_vcpkg() -> bool {
-    false
-}
-
-#[cfg(target_env = "msvc")]
-fn try_vcpkg() -> bool {
-    vcpkg::Config::new()
-        .emit_includes(true)
-        .probe("libssh2")
-        .map(|_| {
-            // found libssh2 which depends on openssl and zlib
-            vcpkg::Config::new()
-                .lib_name("libssl")
-                .lib_name("libcrypto")
-                .probe("openssl")
-                .or_else(|_| {
-                    // openssl 1.1 was not found, try openssl 1.0
-                    vcpkg::Config::new()
-                        .lib_name("libeay32")
-                        .lib_name("ssleay32")
-                        .probe("openssl")
-                })
-                .expect(
-                    "configured libssh2 from vcpkg but could not \
-                     find openssl libraries that it depends on",
-                );
-
-            vcpkg::Config::new()
-                .lib_names("zlib", "zlib1")
-                .probe("zlib")
-                .expect(
-                    "configured libssh2 from vcpkg but could not \
-                     find the zlib library that it depends on",
-                );
-
-            println!("cargo:rustc-link-lib=crypt32");
-            println!("cargo:rustc-link-lib=gdi32");
-            println!("cargo:rustc-link-lib=user32");
-        })
-        .is_ok()
 }

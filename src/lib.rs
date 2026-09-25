@@ -210,7 +210,7 @@
 //! }
 //! ```
 
-#![doc(html_root_url = "https://docs.rs/ssh2")]
+#![doc(html_root_url = "https://docs.rs/sshw-ssh2")]
 #![allow(trivial_numeric_casts)]
 #![deny(missing_docs, unused_results)]
 #![cfg_attr(test, deny(warnings))]
